@@ -1,0 +1,25 @@
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+import java.util.Base64;
+
+public class DecryptionExample {
+    public static void main(String[] args) throws Exception {
+        String encodedText = "YourEncodedTextHere"; // Replace with your encoded text
+        String secretKey = "MySecretKey12345"; // Replace with your own secret key
+
+        // Create a SecretKeySpec for the encryption algorithm (e.g., AES)
+        SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getBytes("UTF-8"), "AES");
+
+        // Create a Cipher object for decryption
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.DECRYPT_MODE, secretKeySpec);
+
+        // Decode the Base64 encoded text
+        byte[] decodedText = Base64.getDecoder().decode(encodedText);
+
+        // Decrypt the text
+        byte[] decryptedText = cipher.doFinal(decodedText);
+
+        System.out.println("Decrypted Text: " + new String(decryptedText, "UTF-8"));
+    }
+}
