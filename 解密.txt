@@ -4,22 +4,22 @@ import java.util.Base64;
 
 public class DecryptionExample {
     public static void main(String[] args) throws Exception {
-        String encodedText = "YourEncodedTextHere"; // Replace with your encoded text
-        String secretKey = "MySecretKey12345"; // Replace with your own secret key
+        String encodedText = "YourEncodedTextHere"; // 替换为您的编码文本
+        String secretKey = "MySecretKey12345"; // 替换为您自己的密钥
 
-        // Create a SecretKeySpec for the encryption algorithm (e.g., AES)
+        // 创建一个用于加密算法（例如AES）的SecretKeySpec
         SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getBytes("UTF-8"), "AES");
 
-        // Create a Cipher object for decryption
+        // 创建一个用于解密的Cipher对象
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.DECRYPT_MODE, secretKeySpec);
 
-        // Decode the Base64 encoded text
+        // 解码Base64编码的文本
         byte[] decodedText = Base64.getDecoder().decode(encodedText);
 
-        // Decrypt the text
+        // 解密文本
         byte[] decryptedText = cipher.doFinal(decodedText);
 
-        System.out.println("Decrypted Text: " + new String(decryptedText, "UTF-8"));
+        System.out.println("解密后的文本: " + new String(decryptedText, "UTF-8"));
     }
 }
