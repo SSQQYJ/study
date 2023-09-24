@@ -1,0 +1,179 @@
+import java.security.SecureRandom;
+import java.util.Scanner;
+public class PasswordManger{
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        boolean result = true;
+        while (result) {
+            System.out.println("============欢迎使用密码管理系统===============");
+            System.out.println("请选择功能：\n1. 加密\n2. 解密\n3. 判断强度\n4. 生成密码\n5. 退出系统");
+            String choice = scanner.next();
+            scanner.nextLine(); // 读取换行符
+            switch (choice) {
+                case "1":
+                    System.out.println("请输入要加密的密码：");
+                    String password = scanner.nextLine();
+                    if (isPassword(password)) {
+                        String encryptedPassword = encrypt(password);
+                        System.out.println("加密后的密码为：" + encryptedPassword);
+                    } else {
+                        System.out.println("字符应为数字或者大小写字母，长度不超过16，请重新输入。");
+                    }
+                    break;
+                case "2":
+                    System.out.println("请输入要解密的密码：");
+                    String encryptedPassword2 = scanner.nextLine();
+                    if (isPassword(encryptedPassword2)) {
+                        String decryptedPassword = decrypt(encryptedPassword2);
+                        System.out.println("解密后的密码为：" + decryptedPassword);
+                    } else {
+                        System.out.println("字符应为数字或者大小写字母，长度不超过16，请重新输入。");
+                    }
+                    break;
+                case "3":
+                    System.out.println("请输入要判断强度的密码：");
+                    String password2 = scanner.nextLine();
+                    if(isPassword(password2)) {
+                        String strength = checkStrength(password2);
+                        System.out.println("密码强度为：" + strength);
+                    }
+                    else{
+                        System.out.println(" 每个字符为数字或者大小写字母，长度不超过16");
+                    }
+                    break;
+                case "4":
+                    try {
+                        System.out.print("请输入密码长度：");
+                        int passwordLength = scanner.nextInt();
+                        scanner.nextLine(); // 读取换行符
+                        String generatedPassword = generatePassword(passwordLength);
+                        if (generatedPassword != null) {
+                            System.out.println("生成的密码是：" + generatedPassword);
+                        }
+                    }
+                    catch (Exception e){
+                        System.out.println("输入错误,请重新选择功能");
+                        scanner.nextLine(); // 读取换行符
+                    }
+                    break;
+                case "5":
+                    System.out.println("谢谢您的使用，欢迎下次再来");
+                    result = false;
+                    break;
+                default:
+                    System.out.println("无效的选择！");
+            }
+        }
+    }
+        public static boolean isPassword (String password){
+            if (password.length() > 16) {
+                return false;
+            }
+            for (int i = 0; i < password.length(); i++) {
+                char c = password.charAt(i);
+                //判断一个字符c是否是字母或数字。如果不是，则返回false。
+                if (!Character.isLetterOrDigit(c)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        // 加密密码
+        public static String encrypt (String password){
+            StringBuilder encryptedPassword = new StringBuilder();
+        /*
+        代码逐个遍历密码中的字符，对每个字符进行以下操作：
+        1. 获取字符的ASCII码值。
+        2. 将ASCII码值加上字符在密码中的位置索引（i+1） 再加上3。
+        3. 将得到的结果转换为对应的字符，并将其追加到加密密码字符串中。
+         */
+            for (int i = 0; i < password.length(); i++) {
+                char c = password.charAt(i);
+                int ascii = (int) c + i + 1 + 3;
+                encryptedPassword.append((char) ascii);
+            }
+            //将加密密码的第一个字符和最后一个字符交换位置。
+            if (encryptedPassword.length() >= 2) {
+                char firstChar = encryptedPassword.charAt(0);
+                char lastChar = encryptedPassword.charAt(encryptedPassword.length() - 1);
+                encryptedPassword.setCharAt(0, lastChar);
+                encryptedPassword.setCharAt(encryptedPassword.length() - 1, firstChar);
+            }
+            encryptedPassword.reverse();
+            return encryptedPassword.toString();
+        }
+        // 解密密码
+        public static String decrypt (String encryptedPassword){
+            StringBuilder decryptedPassword = new StringBuilder(encryptedPassword);
+            //将解密后的密码进行反转，并且如果密码的长度大于等于2，则将密码的第一个字符和最后一个字符进行交换。
+            decryptedPassword.reverse();
+            if (decryptedPassword.length() >= 2) {
+                char firstChar = decryptedPassword.charAt(0);
+                char lastChar = decryptedPassword.charAt(decryptedPassword.length() - 1);
+                decryptedPassword.setCharAt(0, lastChar);
+                decryptedPassword.setCharAt(decryptedPassword.length() - 1, firstChar);
+            }
+            //解密密码函数
+            for (int i = 0; i < decryptedPassword.length(); i++) {
+                char c = decryptedPassword.charAt(i);
+                int ascii = (int) c - i - 1 - 3;
+                decryptedPassword.setCharAt(i, (char) ascii);
+            }
+            return decryptedPassword.toString();
+        }
+        // 判断密码强度
+        public static String checkStrength (String password){
+            int length = password.length();
+            boolean hasDigit = false;
+            boolean hasLowerCase = false;
+            boolean hasUpperCase = false;
+            for (int i = 0; i < length; i++) {
+                char c = password.charAt(i);
+                if (Character.isDigit(c)) {//判断数字
+                    hasDigit = true;
+                } else if (Character.isLowerCase(c)) {//判断小写字母
+                    hasLowerCase = true;
+                } else if (Character.isUpperCase(c)) {//判断大写字母
+                    hasUpperCase = true;
+                }
+            }
+            if (length < 8 || (hasDigit && !hasLowerCase && !hasUpperCase) || (!hasDigit && hasLowerCase && !hasUpperCase)
+                    || (!hasDigit && !hasLowerCase && hasUpperCase)|| (!hasDigit && hasLowerCase && hasUpperCase)) {
+                return "弱强度";
+            } else if (length >= 8 && hasDigit && hasLowerCase && hasUpperCase) {
+                return "高强度";
+            } else if (length >= 8 && ((hasDigit && hasLowerCase) || (hasDigit && hasUpperCase))) {
+                return "中强度";
+            } else {
+                return "未知字符强度";
+            }
+        }
+        // 生成强密码
+        public static String generatePassword ( int passwordLength){
+            if (passwordLength < 8||passwordLength >16) {
+                System.out.println("请重新输入，密码长度必须至少为8个字符且不超过16位");
+                return null;
+            } else {
+                String uppercaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                String lowercaseLetters = "abcdefghijklmnopqrstuvwxyz";
+                String digits = "0123456789";
+                String allCharacters = uppercaseLetters + lowercaseLetters + digits;
+                SecureRandom random = new SecureRandom();
+                StringBuilder password = new StringBuilder();
+                for (int i = 0; i < passwordLength - 3; i++) {
+                    int randomIndex = random.nextInt(allCharacters.length());
+                    char randomCharacter = allCharacters.charAt(randomIndex);
+                    password.append(randomCharacter);
+                }
+                int randoNum = random.nextInt(10);
+                password.append(randoNum);
+                int randomLetters = random.nextInt(26);
+                char randomUpLetters = uppercaseLetters.charAt(randomLetters);
+                char randomLowLetters = lowercaseLetters.charAt(randomLetters);
+                password.append(randomUpLetters);
+                password.append(randomLowLetters);
+                return password.toString();
+            }
+        }
+    }
+
