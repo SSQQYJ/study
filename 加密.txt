@@ -1,4 +1,4 @@
-  // 加密密码
+  // 加密密码  
 public static String encrypt(String password) {
         StringBuilder encryptedPassword = new StringBuilder();
         /*
